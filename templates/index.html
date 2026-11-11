@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chris Casino</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header><div class="brand">♠ CHRIS CASINO ♦<small>PRIVATE PLAY-MONEY CASINO</small></div><div id="topPlayer">Guest</div></header>
+<main>
+<section id="loginBox" class="panel login"><h1>WELCOME TO CHRIS CASINO</h1><p>Select your player and enter your PIN.</p>
+<select id="loginName"></select><input id="loginPin" type="password" inputmode="numeric" maxlength="12" placeholder="Player PIN">
+<button class="gold" onclick="login()">ENTER CASINO</button><p class="muted">Fictional credits only. No deposits, withdrawals, or cash-out.</p></section>
+
+<section id="casino" class="hidden">
+<div class="stats"><div><small>BALANCE</small><strong id="balance">$0</strong></div><div><small>RANK</small><strong id="rank">#—</strong></div><div><small>PLAYER</small><strong id="meName">—</strong></div></div>
+
+<div class="games sixGames">
+<!-- BLACKJACK -->
+<section class="game">
+  <div class="title"><div><h2>♠ BLACKJACK</h2><span>6-deck • dealer stands on 17 • Blackjack 3:2</span></div><button class="infoBtn" onclick="showInfo('blackjack')" aria-label="Blackjack info">ⓘ</button></div>
+  <div class="felt compactFelt"><h3>DEALER <span id="dealerValue"></span></h3><div class="hand" id="dealerHand"></div><hr><h3>PLAYER <span id="playerValue"></span></h3><div class="hand" id="playerHand"></div></div>
+  <p id="bjMsg">Place your wager and deal.</p>
+  <div class="betGrid">
+    <label>Main<input id="bjBet" type="number" min="1" value="10"></label>
+    <label>Perfect Pairs<input id="bjPP" type="number" min="0" value="0"></label>
+    <label>21+3<input id="bj213" type="number" min="0" value="0"></label>
+  </div>
+  <div class="controls"><button class="gold" onclick="deal()">DEAL</button><button id="hit" disabled onclick="bj('hit')">HIT</button><button id="stand" disabled onclick="bj('stand')">STAND</button><button id="double" disabled onclick="bj('double')">DOUBLE</button></div>
+  <div id="bjSide" class="sideResults"></div>
+</section>
+
+<!-- ROULETTE -->
+<section class="game">
+  <div class="title"><div><h2>🎡 ROULETTE</h2><span>Single-zero European wheel</span></div><button class="infoBtn" onclick="showInfo('roulette')" aria-label="Roulette info">ⓘ</button></div>
+  <div class="wheel"><div id="wheelResult">?</div><b id="wheelColor">PLACE YOUR BET</b></div>
+  <div id="numberBoard" class="numberBoard"></div>
+  <div class="controls"><input id="rBet" type="number" min="1" value="10"><select id="rType" onchange="toggleNumber()">
+    <option value="red">RED — 1:1</option><option value="black">BLACK — 1:1</option><option value="green">GREEN 0 — 35:1</option>
+    <option value="number">EXACT NUMBER — 35:1</option><option value="odd">ODD — 1:1</option><option value="even">EVEN — 1:1</option>
+    <option value="low">1–18 — 1:1</option><option value="high">19–36 — 1:1</option>
+    <option value="1st12">1ST 12 — 2:1</option><option value="2nd12">2ND 12 — 2:1</option><option value="3rd12">3RD 12 — 2:1</option>
+    <option value="col1">COLUMN 1 — 2:1</option><option value="col2">COLUMN 2 — 2:1</option><option value="col3">COLUMN 3 — 2:1</option>
+    <option value="basket">BASKET 0-1-2-3 — 8:1</option><option value="snake">SNAKE BET — 2:1</option>
+  </select><select id="rNumber" class="hidden"></select><button class="gold" onclick="spin()">SPIN</button></div><p id="rMsg">Choose a roulette wager.</p>
+</section>
+
+<!-- CRAPS -->
+<section class="game">
+  <div class="title"><div><h2>🎲 CRAPS</h2><span>Pass / Don't Pass + prop & hardway bets</span></div><button class="infoBtn" onclick="showInfo('craps')" aria-label="Craps info">ⓘ</button></div>
+  <div class="crapsTable">
+    <div class="diceRow"><div class="die" id="die1">–</div><div class="die" id="die2">–</div></div>
+    <div class="crapsStatus"><span>POINT</span><strong id="crapsPoint">OFF</strong><span>LINE</span><strong id="crapsLine">NONE</strong></div>
+  </div>
+  <div class="betGrid">
+    <label>Line Bet<select id="crapsLineType"><option value="none">NO NEW LINE BET</option><option value="pass">PASS LINE</option><option value="dontpass">DON'T PASS</option></select></label>
+    <label>Line Amount<input id="crapsLineBet" type="number" min="0" value="10"></label>
+    <label>Side / Prop<select id="crapsProp"><option value="none">NONE</option><option value="field">FIELD</option><option value="any7">ANY 7</option><option value="anycraps">ANY CRAPS</option><option value="yo">YO 11</option><option value="snakeeyes">SNAKE EYES 2</option><option value="boxcars">BOXCARS 12</option><option value="hard4">HARD 4</option><option value="hard6">HARD 6</option><option value="hard8">HARD 8</option><option value="hard10">HARD 10</option></select></label>
+    <label>Side Amount<input id="crapsPropBet" type="number" min="0" value="0"></label>
+  </div>
+  <div class="controls"><button class="gold" onclick="rollCraps()">ROLL DICE</button></div>
+  <p id="crapsMsg">Come-out roll ready.</p><div id="hardBets" class="sideResults"></div>
+</section>
+
+<!-- BACCARAT -->
+<section class="game">
+  <div class="title"><div><h2>🂡 BACCARAT</h2><span>8-deck Punto Banco</span></div><button class="infoBtn" onclick="showInfo('baccarat')" aria-label="Baccarat info">ⓘ</button></div>
+  <div class="felt compactFelt baccaratFelt"><h3>BANKER <span id="bankerTotal"></span></h3><div class="hand" id="bankerHand"></div><hr><h3>PLAYER <span id="baccaratPlayerTotal"></span></h3><div class="hand" id="baccaratPlayerHand"></div></div>
+  <div class="betGrid">
+    <label>Main Bet<select id="bMain"><option value="player">PLAYER — 1:1</option><option value="banker">BANKER — 0.95:1</option><option value="tie">TIE — 8:1</option></select></label>
+    <label>Main Amount<input id="bBet" type="number" min="1" value="10"></label>
+    <label>Player Pair<input id="bPlayerPair" type="number" min="0" value="0"></label>
+    <label>Banker Pair<input id="bBankerPair" type="number" min="0" value="0"></label>
+    <label>Dragon Bonus<select id="bDragonSide"><option value="player">PLAYER DRAGON</option><option value="banker">BANKER DRAGON</option></select></label>
+    <label>Dragon Amount<input id="bDragon" type="number" min="0" value="0"></label>
+  </div>
+  <div class="controls"><button class="gold" onclick="playBaccarat()">DEAL BACCARAT</button></div><p id="bMsg">Choose Player, Banker, or Tie.</p>
+</section>
+
+<!-- DJ WILD -->
+<section class="game">
+  <div class="title"><div><h2>🃏 DJ WILD</h2><span>Deuces + Joker wild</span></div><button class="infoBtn" onclick="showInfo('dj')" aria-label="DJ Wild info">ⓘ</button></div>
+  <div class="felt compactFelt"><h3>DEALER <span id="djDealerRank"></span></h3><div class="hand smallCards" id="djDealer"></div><hr><h3>PLAYER <span id="djPlayerRank"></span></h3><div class="hand smallCards" id="djPlayer"></div></div>
+  <div class="betGrid"><label>Ante (Blind matches)<input id="djAnte" type="number" min="1" value="10"></label><label>Trips<input id="djTrips" type="number" min="0" value="0"></label><label>Two-Way Bad Beat<input id="djBad" type="number" min="0" value="0"></label></div>
+  <div class="controls"><button class="gold" onclick="dealDJ()">DEAL</button><button id="djFold" disabled onclick="actDJ('fold')">FOLD</button><button id="djPlay" disabled onclick="actDJ('play')">PLAY 2X</button></div><p id="djMsg">Ante and Blind are equal; Play costs 2× Ante.</p>
+</section>
+
+<!-- I LUV SUITS -->
+<section class="game">
+  <div class="title"><div><h2>♥ I LUV SUITS</h2><span>7-card flush poker</span></div><button class="infoBtn" onclick="showInfo('suits')" aria-label="Suits info">ⓘ</button></div>
+  <div class="felt compactFelt"><h3>DEALER <span id="sDealerRank"></span></h3><div class="hand tinyCards" id="sDealer"></div><hr><h3>PLAYER <span id="sPlayerRank"></span></h3><div class="hand tinyCards" id="sPlayer"></div></div>
+  <div class="betGrid"><label>Ante<input id="sAnte" type="number" min="1" value="10"></label><label>Flush Rush<input id="sFlush" type="number" min="0" value="0"></label><label>Super Flush Rush<input id="sSuper" type="number" min="0" value="0"></label></div>
+  <div class="controls"><button class="gold" onclick="dealSuits()">DEAL</button><button id="sFold" disabled onclick="actSuits('fold')">FOLD</button><button id="sPlay1" disabled onclick="actSuits('play',1)">PLAY 1X</button><button id="sPlay2" disabled onclick="actSuits('play',2)">PLAY 2X</button><button id="sPlay3" disabled onclick="actSuits('play',3)">PLAY 3X</button></div><p id="sMsg">Build the longest, highest flush and beat the dealer.</p>
+</section>
+</div>
+
+<div class="lower"><section class="panel"><h2>🏆 LEADERBOARD</h2><div id="leaderboard"></div></section>
+<section class="panel"><h2>🧾 RECENT ACTIVITY</h2><div id="history"></div></section></div>
+
+<section class="panel admin"><h2>CASINO ADMIN</h2>
+<div class="controls"><input id="adminPin" type="password" placeholder="Admin PIN"><button onclick="adminLogin()">UNLOCK ADMIN</button></div>
+<div id="adminControls" class="hidden"><hr class="adminDivider"><h3>PLAYER BALANCES</h3>
+<div class="controls"><select id="adminPlayer"></select><input id="adminBalance" type="number" min="0" step="1" placeholder="New balance"><button class="gold" onclick="setPlayerBalance()">SET BALANCE</button></div>
+<p id="adminBalanceMsg" class="muted">Select a player and enter the exact balance you want them to have.</p><hr class="adminDivider"><div class="controls"><button id="resetBalancesBtn" onclick="resetCasino()">RESET ALL BALANCES</button></div></div>
+<p class="muted">Admin controls require the correct ADMIN_PIN.</p></section>
+</section>
+</main>
+
+<div id="infoModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+  <div class="modalCard"><div class="modalHead"><h2 id="infoTitle">Game Info</h2><button class="infoBtn" onclick="closeInfo()" aria-label="Close game info">✕</button></div><div id="infoBody"></div></div>
+</div>
+
+<script>
+const $=x=>document.getElementById(x), money=x=>"$"+Number(x).toLocaleString();
+let gid=null,djGid=null,suitsGid=null;
+const GAME_INFO={
+blackjack:{title:"Blackjack",html:`<p><b>Premise:</b> Beat the dealer without going over 21. Dealer stands on 17. A two-card Blackjack pays 3:2.</p><h3>Bets</h3><p><b>Main:</b> regular Blackjack wager. <b>Perfect Pairs:</b> your first two cards must match rank; Mixed Pair pays 6:1, Colored Pair 12:1, Perfect Pair 25:1. <b>21+3:</b> your first two cards plus the dealer up-card form a poker hand; Flush 5:1, Straight 10:1, Trips 25:1, Straight Flush 40:1, Suited Trips 100:1.</p>`},
+roulette:{title:"Roulette",html:`<p><b>Premise:</b> One number from 0–36 is selected on a single-zero wheel.</p><h3>Bets</h3><p>Red/Black, Odd/Even, 1–18/19–36 pay 1:1. Dozens and Columns pay 2:1. Exact Number pays 35:1. Green 0 pays 35:1. <b>Basket</b> covers 0-1-2-3 and pays 8:1. <b>Snake</b> covers the 12 snake-layout numbers and pays 2:1.</p>`},
+craps:{title:"Craps",html:`<p><b>Premise:</b> Pass/Don't Pass begins on a come-out roll. A 4,5,6,8,9,10 establishes a point; the line bet stays active until the point or a 7 resolves it.</p><h3>Bets</h3><p><b>Pass:</b> 7/11 wins on come-out; 2/3/12 loses. <b>Don't Pass:</b> 2/3 wins, 12 pushes, 7/11 loses. <b>Field:</b> 3/4/9/10/11 pay 1:1; 2/12 pay 2:1. Any 7 pays 4:1, Any Craps 7:1, Yo 11 pays 15:1, Snake Eyes/Boxcars pay 30:1. Hard 4/10 pay 7:1; Hard 6/8 pay 9:1 and remain active until they hit, seven-out, or roll the easy way.</p>`},
+baccarat:{title:"Baccarat",html:`<p><b>Premise:</b> Player and Banker are dealt automatically under standard Punto Banco third-card rules. Closest total to 9 wins; only the last digit counts.</p><h3>Bets</h3><p>Player pays 1:1. Banker pays 0.95:1 (whole-credit payout is rounded down). Tie pays 8:1. Player Pair and Banker Pair pay 11:1. <b>Dragon Bonus</b> pays 1:1 on a natural win or by margin: 4=1:1, 5=2:1, 6=4:1, 7=6:1, 8=10:1, 9=30:1.</p>`},
+dj:{title:"DJ Wild",html:`<p><b>Premise:</b> Five-card poker against the dealer using a 53-card deck. All deuces and the Joker are wild. You make equal Ante and Blind wagers, then Fold or make a 2× Ante Play wager.</p><h3>Bets</h3><p><b>Blind:</b> pays only when you beat the dealer: Straight 1:1, Flush 2:1, Full House 3:1, Quads 4:1, Straight Flush 9:1, Five of a Kind 10:1, Royal 50:1, Five Wilds 1000:1; lower wins push the Blind. <b>Trips:</b> pays 3-of-a-kind+ with larger awards for natural hands. <b>Two-Way Bad Beat:</b> both hands must be Trips+ and not tie; payout is based on the losing hand, from 15:1 for Trips up to 500:1 for top hands.</p>`},
+suits:{title:"I Luv Suits",html:`<p><b>Premise:</b> You and the dealer each get seven cards. Your hand is ranked first by the number of cards in your longest suit, then by the ranks in that flush. Dealer needs at least a 3-card 9-high flush to qualify.</p><h3>Bets</h3><p>Ante starts the hand. After seeing your cards, Play can be 1× Ante with up to a 4-card flush, up to 2× with a 5-card flush, and up to 3× with a 6/7-card flush. <b>Flush Rush:</b> 4-card 1:1, 5-card 10:1, 6-card 100:1, 7-card 300:1. <b>Super Flush Rush:</b> 3-card straight flush 7:1, 4-card 60:1, 5-card 100:1, 6-card 1000:1, 7-card 8000:1.</p>`}
+};
+function showInfo(k){let i=GAME_INFO[k];$("infoTitle").textContent=i.title+" — How to Play";$("infoBody").innerHTML=i.html;$("infoModal").classList.remove("hidden")}
+function closeInfo(){$("infoModal").classList.add("hidden")}
+$("infoModal").addEventListener("click",e=>{if(e.target.id==="infoModal")closeInfo()});
+async function api(url,opt={}){let r=await fetch(url,{headers:{"Content-Type":"application/json"},...opt}),d=await r.json();if(!r.ok)throw Error(d.error||"Request failed");return d}
+function card(c){return `<div class="playingCard ${c.rank=="?"?"back":(["♥","♦"].includes(c.suit)?"redCard":"")}">${c.rank=="?"?"★":c.rank==="JOKER"?"JOKER ★":c.rank+" "+c.suit}</div>`}
+function cards(id,hand){$(id).innerHTML=hand.map(card).join("")}
+async function load(){let s=await api("/api/state");$("loginName").innerHTML=s.players.map(p=>`<option>${p.name}</option>`).join("");$("adminPlayer").innerHTML=s.players.map(p=>`<option value="${p.id}">${p.name} — ${money(p.balance)}</option>`).join("");$("rNumber").innerHTML=[...Array(37).keys()].map(n=>`<option>${n}</option>`).join("");let reds=[1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];$("numberBoard").innerHTML=[...Array(37).keys()].map(n=>`<button onclick="chooseNum(${n})" class="${n==0?"green":reds.includes(n)?"red":"black"}">${n}</button>`).join("");if(s.logged_in){$("loginBox").classList.add("hidden");$("casino").classList.remove("hidden")}renderState(s)}
+function renderState(s){if(s.me){$("balance").textContent=money(s.me.balance);$("meName").textContent=s.me.name;$("topPlayer").textContent=s.me.name;let i=s.players.findIndex(p=>p.name==s.me.name);$("rank").textContent="#"+(i+1)}$("leaderboard").innerHTML=s.players.map((p,i)=>`<div class="row ${s.me&&p.name==s.me.name?"mine":""}"><span>#${i+1} ${p.name}</span><b>${money(p.balance)}</b></div>`).join("");$("history").innerHTML=s.transactions?.length?s.transactions.map(x=>`<div class="tx"><span>${x.name} • ${x.game}</span><b class="${x.amount>=0?'winText':'lossText'}">${x.amount>=0?'+':''}${money(x.amount)}</b><small>${x.description}</small></div>`).join(""):"<span class=muted>No activity yet.</span>";if($("adminPlayer")){$("adminPlayer").innerHTML=s.players.map(p=>`<option value="${p.id}">${p.name} — ${money(p.balance)}</option>`).join("")}if(s.craps){$("crapsPoint").textContent=s.craps.point??"OFF";$("crapsLine").textContent=s.craps.line_type?`${s.craps.line_type.toUpperCase()} ${money(s.craps.line_bet)}`:"NONE";renderHardBets(s.craps.hard_bets)}}
+async function refresh(){renderState(await api("/api/state"))}
+async function login(){try{await api("/api/login",{method:"POST",body:JSON.stringify({name:$("loginName").value,pin:$("loginPin").value})});$("loginBox").classList.add("hidden");$("casino").classList.remove("hidden");refresh()}catch(e){alert(e.message)}}
+function renderBJ(d){cards("dealerHand",d.dealer_hand);cards("playerHand",d.player_hand);$("dealerValue").textContent=d.dealer_value==null?"":"("+d.dealer_value+")";$("playerValue").textContent="("+d.player_value+")";$("bjMsg").textContent={playing:"Your move.",win:"YOU WIN.",lose:"Dealer wins.",push:"PUSH — wager returned.",bust:"BUST.",blackjack:"BLACKJACK — paid 3:2."}[d.status]||d.status;$("bjSide").innerHTML=(d.side_results||[]).map(x=>`<span>${x}</span>`).join("");let active=d.status==="playing";$("hit").disabled=!active;$("stand").disabled=!active;$("double").disabled=!active||!d.can_double}
+async function deal(){try{let d=await api("/api/blackjack/deal",{method:"POST",body:JSON.stringify({bet:+$("bjBet").value,perfect_pairs:+$("bjPP").value,twentyone3:+$("bj213").value})});gid=d.game_id;renderBJ(d);refresh()}catch(e){alert(e.message)}}
+async function bj(action){try{let d=await api("/api/blackjack/action",{method:"POST",body:JSON.stringify({game_id:gid,action})});renderBJ(d);refresh()}catch(e){alert(e.message)}}
+function toggleNumber(){$("rNumber").classList.toggle("hidden",$("rType").value!=="number")}
+function chooseNum(n){$("rType").value="number";$("rNumber").value=n;toggleNumber()}
+async function spin(){try{let t=$("rType").value,d=await api("/api/roulette/spin",{method:"POST",body:JSON.stringify({bet:+$("rBet").value,type:t,value:t==="number"?+$("rNumber").value:null})});$("wheelResult").textContent=d.number;$("wheelResult").className="result "+d.color;$("wheelColor").textContent=d.color.toUpperCase();$("rMsg").textContent=d.won?"WIN — "+money(d.payout)+" returned.":"LOSS.";refresh()}catch(e){alert(e.message)}}
+function renderHardBets(h){let e=Object.entries(h||{});$("hardBets").innerHTML=e.length?e.map(([k,v])=>`<span>ACTIVE ${k.toUpperCase()}: ${money(v)}</span>`).join(""):""}
+async function rollCraps(){try{let d=await api("/api/craps/roll",{method:"POST",body:JSON.stringify({line_type:$("crapsLineType").value,line_bet:+$("crapsLineBet").value,prop:$("crapsProp").value,prop_bet:+$("crapsPropBet").value})});$("die1").textContent=d.dice[0];$("die2").textContent=d.dice[1];$("crapsPoint").textContent=d.point??"OFF";$("crapsLine").textContent=d.line_type?`${d.line_type.toUpperCase()} ${money(d.line_bet)}`:"NONE";$("crapsMsg").textContent=[`Rolled ${d.total}.`,d.line_message,d.prop_message,...(d.hard_messages||[])].filter(Boolean).join(" ");renderHardBets(d.hard_bets);$("crapsLineType").value="none";$("crapsProp").value="none";$("crapsPropBet").value=0;refresh()}catch(e){alert(e.message)}}
+async function playBaccarat(){try{let d=await api("/api/baccarat/play",{method:"POST",body:JSON.stringify({main:$("bMain").value,bet:+$("bBet").value,player_pair:+$("bPlayerPair").value,banker_pair:+$("bBankerPair").value,dragon_side:$("bDragonSide").value,dragon:+$("bDragon").value})});cards("bankerHand",d.banker_hand);cards("baccaratPlayerHand",d.player_hand);$("bankerTotal").textContent="("+d.banker_total+")";$("baccaratPlayerTotal").textContent="("+d.player_total+")";$("bMsg").textContent=d.result.toUpperCase()+" — "+d.messages.join(" ");refresh()}catch(e){alert(e.message)}}
+async function dealDJ(){try{let d=await api("/api/dj/deal",{method:"POST",body:JSON.stringify({ante:+$("djAnte").value,trips:+$("djTrips").value,badbeat:+$("djBad").value})});djGid=d.game_id;cards("djPlayer",d.player_hand);cards("djDealer",d.dealer_hand);$("djPlayerRank").textContent=d.player_rank;$("djDealerRank").textContent="";$("djMsg").textContent=(d.trips_message?d.trips_message+" ":"")+`Choose Fold or Play (${money(d.play_cost)}).`;$("djFold").disabled=false;$("djPlay").disabled=false;refresh()}catch(e){alert(e.message)}}
+async function actDJ(action){try{let d=await api("/api/dj/action",{method:"POST",body:JSON.stringify({game_id:djGid,action})});cards("djPlayer",d.player_hand);cards("djDealer",d.dealer_hand);$("djPlayerRank").textContent=d.player_rank;$("djDealerRank").textContent=d.dealer_rank;$("djMsg").textContent=d.messages.join(" ");$("djFold").disabled=true;$("djPlay").disabled=true;refresh()}catch(e){alert(e.message)}}
+async function dealSuits(){try{let d=await api("/api/suits/deal",{method:"POST",body:JSON.stringify({ante:+$("sAnte").value,flush_rush:+$("sFlush").value,super_rush:+$("sSuper").value})});suitsGid=d.game_id;cards("sPlayer",d.player_hand);cards("sDealer",d.dealer_hand);$("sPlayerRank").textContent=d.player_flush+"-card flush";$("sDealerRank").textContent="";$("sMsg").textContent=(d.side_messages||[]).join(" ")+` Max Play: ${d.max_play}x.`;$("sFold").disabled=false;$("sPlay1").disabled=false;$("sPlay2").disabled=d.max_play<2;$("sPlay3").disabled=d.max_play<3;refresh()}catch(e){alert(e.message)}}
+async function actSuits(action,multiplier=1){try{let d=await api("/api/suits/action",{method:"POST",body:JSON.stringify({game_id:suitsGid,action,multiplier})});cards("sPlayer",d.player_hand);cards("sDealer",d.dealer_hand);$("sPlayerRank").textContent=d.player_flush+"-card flush";$("sDealerRank").textContent=d.dealer_flush+"-card flush"+(d.dealer_qualifies?"":" • NO QUALIFY");$("sMsg").textContent=d.messages.join(" ");["sFold","sPlay1","sPlay2","sPlay3"].forEach(id=>$(id).disabled=true);refresh()}catch(e){alert(e.message)}}
+async function adminLogin(){try{await api("/api/admin/login",{method:"POST",body:JSON.stringify({pin:$("adminPin").value})});$("adminControls").classList.remove("hidden");$("adminPin").value="";alert("Admin unlocked.")}catch(e){$("adminControls").classList.add("hidden");alert(e.message)}}
+async function setPlayerBalance(){let pid=+$("adminPlayer").value,balance=+$("adminBalance").value;if(!Number.isInteger(balance)||balance<0){alert("Enter a whole-number balance of 0 or more.");return}if(!confirm("Set this player's balance to "+money(balance)+"?"))return;try{let d=await api("/api/admin/set-balance",{method:"POST",body:JSON.stringify({player_id:pid,balance})});$("adminBalanceMsg").textContent="Balance changed from "+money(d.old_balance)+" to "+money(d.balance)+".";await refresh()}catch(e){alert(e.message)}}
+async function resetCasino(){if(!confirm("Reset every player's balance to their original starting balance?"))return;try{await api("/api/admin/reset",{method:"POST",body:"{}"});$("adminBalanceMsg").textContent="All player balances were reset.";refresh()}catch(e){alert("Admin authorization required.")}}
+load();
+</script>
+</body>
+</html>
