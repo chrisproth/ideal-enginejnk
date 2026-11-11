@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: chris-casino
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_PIN
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: COOKIE_SECURE
+        value: "1"
