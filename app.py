@@ -121,16 +121,60 @@ def init_db():
         """))
 
         for name, cfg in PLAYERS.items():
-            ph = hashlib.sha256(str(cfg["pin"]).encode()).hexdigest()
-            row = c.execute(text("SELECT id FROM players WHERE name=:name"), {"name": name}).mappings().first()
+            ph = hashlib.sha256(
+                str(cfg["pin"]).encode()
+            ).hexdigest()
+
+            row = c.execute(
+                text("""
+                    SELECT id
+                    FROM players
+                    WHERE name=:name
+                """),
+                {
+                    "name": name
+                }
+            ).mappings().first()
+
             if not row:
-                c.execute(text("""INSERT INTO players(name,pin_hash,balance,starting_balance)
-                                  VALUES(:name,:pin_hash,:balance,:starting_balance)"""), {
-                    "name": name,
-                    "pin_hash": ph,
-                    "balance": int(cfg["balance"]),
-                    "starting_balance": int(cfg["balance"]),
-                })
+                # New player: create them with configured starting balance + PIN.
+                c.execute(
+                    text("""
+                        INSERT INTO players(
+                            name,
+                            pin_hash,
+                            balance,
+                            starting_balance
+                        )
+                        VALUES(
+                            :name,
+                            :pin_hash,
+                            :balance,
+                            :starting_balance
+                        )
+                    """),
+                    {
+                        "name": name,
+                        "pin_hash": ph,
+                        "balance": int(cfg["balance"]),
+                        "starting_balance": int(cfg["balance"]),
+                    }
+                )
+
+            else:
+                # Existing player: ONLY update the PIN.
+                # Current balance and starting balance are left untouched.
+                c.execute(
+                    text("""
+                        UPDATE players
+                        SET pin_hash=:pin_hash
+                        WHERE id=:id
+                    """),
+                    {
+                        "pin_hash": ph,
+                        "id": row["id"],
+                    }
+                )
 
 
 init_db()
