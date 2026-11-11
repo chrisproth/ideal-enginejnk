@@ -17,16 +17,16 @@ app.config.update(
 # EDIT THESE 10 PLAYERS, STARTING BALANCES, AND PINS
 # ==========================================================
 PLAYERS = {
-    "Chris": {"balance": 50000, "pin": "111111"},
-    "Player 2": {"balance": 10000, "pin": "222222"},
-    "Player 3": {"balance": 10000, "pin": "333333"},
-    "Player 4": {"balance": 10000, "pin": "444444"},
-    "Player 5": {"balance": 10000, "pin": "555555"},
-    "Player 6": {"balance": 10000, "pin": "666666"},
-    "Player 7": {"balance": 10000, "pin": "777777"},
-    "Player 8": {"balance": 10000, "pin": "888888"},
-    "Player 9": {"balance": 10000, "pin": "999999"},
-    "Player 10": {"balance": 10000, "pin": "101010"},
+    "Chris": {"balance": 618, "pin": "111111"},
+    "boosta": {"balance": 653, "pin": "222222"},
+    "NickGreen2828": {"balance": 159, "pin": "333333"},
+    "Jackp2181": {"balance": 712, "pin": "444444"},
+    "TrizDot": {"balance": 466, "pin": "555555"},
+    "Barragato": {"balance": 568, "pin": "666666"},
+    "Moke28": {"balance": 300, "pin": "777777"},
+    "ShawRJake": {"balance": 600, "pin": "888888"},
+    "tgooner69": {"balance": 786, "pin": "999999"},
+    "Linguine32": {"balance": 311, "pin": "101010"},
 }
 
 ADMIN_PIN = os.getenv("ADMIN_PIN", "1234")
